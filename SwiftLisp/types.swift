@@ -15,11 +15,7 @@ class LispObj {
     // list ならば キャストして値を返す
     func listp() -> ConsCell? { return nil }
     
-    func eval(env: Environment) -> LispObj { return Error(message: "something wrong!") }
-}
-
-class SelfishObj: LispObj {
-    override func eval(env: Environment) -> LispObj {
+    func eval(env: Environment) -> LispObj {
         return self
     }
 }
@@ -28,7 +24,7 @@ class SelfishObj: LispObj {
 Singleton の例
 参考: http://qiita.com/1024jp/items/3a7bc437af3e79f74505
 */
-class Nil: SelfishObj {
+class Nil: LispObj {
     override init() {
     }
     
@@ -129,7 +125,7 @@ class Symbol: LispObj {
     }
 }
 
-class LispNum: SelfishObj {
+class LispNum: LispObj {
     var value: Int;
     init(value: Int) {
         self.value = value;
@@ -140,7 +136,7 @@ class LispNum: SelfishObj {
     }
 }
 
-class LispStr: SelfishObj {
+class LispStr: LispObj {
     var value: String;
     init(value: String) {
         self.value = value;
@@ -151,13 +147,7 @@ class LispStr: SelfishObj {
     }
 }
 
-class LispFunction: SelfishObj {
-    override func toStr() -> String {
-        return "<Procedure>"
-    }
-}
-
-class Error: SelfishObj {
+class Error: LispObj {
     var message: String;
     init(message: String) {
         self.message = message;
@@ -168,7 +158,7 @@ class Error: SelfishObj {
     }
 }
 
-class Environment: SelfishObj {
+class Environment: LispObj {
     var env: [Dictionary<String, LispObj>] = [];
     override init() {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0);

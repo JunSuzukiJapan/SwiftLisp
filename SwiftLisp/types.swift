@@ -9,19 +9,27 @@
 import Foundation
 
 
-protocol LispObj {
-    func toStr() -> String
+class LispObj {
+    func toStr() -> String { return "" }
     
     // list ならば キャストして値を返す
-    func listp() -> ConsCell?
+    func listp() -> ConsCell? { return nil }
+    
+    func eval(env: Environment) -> LispObj { return Error(message: "something wrong!") }
+}
+
+class selfishObj: LispObj {
+    override func eval(env: Environment) -> LispObj {
+        return self
+    }
 }
 
 /*
 Singleton の例
 参考: http://qiita.com/1024jp/items/3a7bc437af3e79f74505
 */
-class Nil: LispObj {
-    init() {
+class Nil: selfishObj {
+    override init() {
     }
     
     class var sharedInstance: Nil {
@@ -31,12 +39,8 @@ class Nil: LispObj {
         return Singleton.instance
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return "nil";
-    }
-    
-    func listp() -> ConsCell? {
-        return nil;
     }
 }
 
@@ -72,7 +76,7 @@ class ConsCell: LispObj {
         self.cdr = cdr;
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         var returnValue: String = "";
         returnValue += "(";
         var tmpcell = self;
@@ -96,8 +100,12 @@ class ConsCell: LispObj {
         return returnValue;
     }
     
-    func listp() -> ConsCell? {
+    override func listp() -> ConsCell? {
         return self;
+    }
+    
+    override func eval(env: Environment) -> LispObj {
+        return apply(self.car, self.cdr, env);
     }
 }
 
@@ -107,67 +115,60 @@ class Symbol: LispObj {
         self.name = name;
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return name;
     }
     
-    func listp() -> ConsCell? {
-        return nil;
+    override func eval(env: Environment) -> LispObj {
+        var value = get(self.name, env);
+        if !(value is Nil) {
+            return value;
+        } else {
+            return Error(message: "Undefined Value: " + self.name);
+        }
     }
 }
 
-class LispNum: LispObj {
+class LispNum: selfishObj {
     var value: Int;
     init(value: Int) {
         self.value = value;
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return String(value);
-    }
-    
-    func listp() -> ConsCell? {
-        return nil;
     }
 }
 
-class LispStr: LispObj {
+class LispStr: selfishObj {
     var value: String;
     init(value: String) {
         self.value = value;
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return "\"" + value + "\"";
-    }
-    
-    func listp() -> ConsCell? {
-        return nil;
     }
 }
 
-class Error: LispObj {
+class Error: selfishObj {
     var message: String;
     init(message: String) {
         self.message = message;
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return "Error: " + message;
-    }
-    
-    func listp() -> ConsCell? {
-        return nil;
     }
 }
 
-class Environment: LispObj {
+class Environment: selfishObj {
     var env: [Dictionary<String, LispObj>] = [];
-    init() {
+    override init() {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0);
     }
     
-    func toStr() -> String {
+    override func toStr() -> String {
         return "[env]";
     }
     
@@ -223,9 +224,5 @@ class Environment: LispObj {
                 return true;
             }
         }
-    }
-    
-    func listp() -> ConsCell? {
-        return nil
     }
 }

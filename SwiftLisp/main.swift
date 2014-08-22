@@ -141,29 +141,7 @@ func def_var(variable: LispObj, val: LispObj, env: Environment) {
 }
 
 func eval(exp: LispObj, env: Environment) -> LispObj {
-    if exp is Error {
-        return exp;
-    }
-    if exp is Nil || exp is LispNum {  // Nilまたは数値の場合はそのまま返す
-        return exp;
-    }
-    if exp is LispStr { // または文字列の場合もそのまま返す(エディタがエラーになるため、 || の連結は禁止
-        return exp;
-    }
-    if let symbol = exp as? Symbol {  // シンボルならば環境の値を検索して返す
-        var value = get(symbol.name, env);
-        if !(value is Nil) {
-            return value;
-        } else {
-            return Error(message: "Undefined Value: " + symbol.name);
-        }
-    }
-    
-    if let consexp = exp.listp() {
-        return apply(consexp.car, consexp.cdr, env);
-    }
-    
-    return Error(message: "something wrong!");
+    return exp.eval(env)
 }
 
 func eval_args(exp: LispObj, env: Environment) -> LispObj {

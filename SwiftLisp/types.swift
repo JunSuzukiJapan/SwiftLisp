@@ -18,7 +18,7 @@ class LispObj {
     func eval(env: Environment) -> LispObj { return Error(message: "something wrong!") }
 }
 
-class selfishObj: LispObj {
+class SelfishObj: LispObj {
     override func eval(env: Environment) -> LispObj {
         return self
     }
@@ -28,7 +28,7 @@ class selfishObj: LispObj {
 Singleton の例
 参考: http://qiita.com/1024jp/items/3a7bc437af3e79f74505
 */
-class Nil: selfishObj {
+class Nil: SelfishObj {
     override init() {
     }
     
@@ -129,7 +129,7 @@ class Symbol: LispObj {
     }
 }
 
-class LispNum: selfishObj {
+class LispNum: SelfishObj {
     var value: Int;
     init(value: Int) {
         self.value = value;
@@ -140,7 +140,7 @@ class LispNum: selfishObj {
     }
 }
 
-class LispStr: selfishObj {
+class LispStr: SelfishObj {
     var value: String;
     init(value: String) {
         self.value = value;
@@ -151,7 +151,13 @@ class LispStr: selfishObj {
     }
 }
 
-class Error: selfishObj {
+class LispFunction: SelfishObj {
+    override func toStr() -> String {
+        return "<Procedure>"
+    }
+}
+
+class Error: SelfishObj {
     var message: String;
     init(message: String) {
         self.message = message;
@@ -162,7 +168,7 @@ class Error: selfishObj {
     }
 }
 
-class Environment: selfishObj {
+class Environment: SelfishObj {
     var env: [Dictionary<String, LispObj>] = [];
     override init() {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0);

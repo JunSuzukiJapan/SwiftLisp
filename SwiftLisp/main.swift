@@ -146,11 +146,11 @@ func eval(exp: LispObj, env: Environment) -> LispObj {
 
 func eval_args(exp: LispObj, env: Environment) -> LispObj {
     if let list = exp.listp() {  //  as? ConsCell {
-        let car_exp = eval(list.car, env);
+        let car_exp = eval(list.left, env);
         if car_exp is Error {
             return car_exp;
         } else {
-            let cdr_exp = eval_args(list.cdr, env);
+            let cdr_exp = eval_args(list.right, env);
             if cdr_exp is Error {
                 return cdr_exp;
             } else {
@@ -162,84 +162,17 @@ func eval_args(exp: LispObj, env: Environment) -> LispObj {
     }
 }
 
-func apply(operator_var: LispObj, operand: LispObj, env: Environment) -> LispObj {
-    let operator_body = eval(operator_var, env);
-    
-    let tmp = operand;
-    if eq(car(operator_body), PRIMITIVE) {  // プリミティブ関数の場合の処理
-        switch cdr(operator_body).toStr() {
-        case "car":
-            return car(eval(car(operand), env));
-        case "cdr":
-            return cdr(eval(car(operand), env));
-        case "=":
-            // (= x 10)
-            // (= y "test")
-            // (= z (+ 1 2))
-            if let variable = car(operand) as? Symbol {  // -> x, y
-                let body = cadr(operand);   // 10, "test"
-                let value = eval(body, env);
-                def_var(variable, value, env);
-                
-                return variable;
-            } else {
-                return Error(message: "Wrong type argument: " + car(operand).toStr());
-            }
-        case "list":
-            return eval_args(operand, env);
-        case "quote":
-            if cdr(operand) is Nil {
-                return car(operand);
-            } else {
-                return Error(message: "Wrong number of arguments: " + operand.toStr());
-            }
-        case "lambda":
-            // lambda式の定義
-            // (lambda (x) (+ x 1))
-            // operand: ((x) (+ x  1))
-            let params = car(operand)   // (x)
-            let body = cadr(operand)    // (+ x 1)
-            
-            let tmp = cons(LispStr(value: LAMBDA), cons(params, cons(body, cons(env.copy(), NIL))));
-            return tmp
-            
-        default:
-            return Error(message: "unknown primitive procedure: " + cdr(operator_body).toStr());
-        }
-    }
-    
-    if eq(car(operator_body), LAMBDA) {
-        // lambda式の実行
-        // oparator_body : ("*** lambda ***" (x) (list x x x) [env])
-        let lambda_params = cadr(operator_body);    // (x)
-        let lambda_body = car(cddr(operator_body)); // (list x x x)
-        if let lambda_env = cadr(cddr(operator_body)) as? Environment { // [env]
-            let operand_check = eval_args(operand, env);
-            if (operand_check is Error) {
-                return operand_check;
-            }
-            
-            if let ex_env = lambda_env.extend(lambda_params, operand: operand_check) {
-                return eval(lambda_body, ex_env);
-            } else {
-                return Error(message: "eval lambda params error: " + lambda_params.toStr() + " " + operand.toStr())
-            }
-        }
-    }
-    
-    return Error(message: "not a function: " + operator_body.toStr());
-}
+var initialEnv =  Environment.InitialEnvironment
+initialEnv.add("car", val:PrimCar())
+initialEnv.add("cdr", val:PrimCdr())
+initialEnv.add("=", val: Setf())
+initialEnv.add("list", val: PrimList())
+initialEnv.add("quote", val: PrimQuote())
+initialEnv.add("fn", val: Lambda())
+initialEnv.add("lambda", val: Lambda())
 
-var initialEnv =  Environment();
-initialEnv.addPrimitive("car");
-initialEnv.addPrimitive("cdr");
-initialEnv.addPrimitive("=");
-initialEnv.addPrimitive("list");
-initialEnv.addPrimitive("quote");
-initialEnv.addPrimitive("lambda");
-
-initialEnv.add("test", val: LispNum(value: 1000));
-initialEnv.add("test2", val: LispStr(value: "hogehoge"));
+initialEnv.add("test", val: LispNum(value: 1000))
+initialEnv.add("test2", val: LispStr(value: "hogehoge"))
 
 var initialexec = "(= x (lambda (y) (list y y y)))"
 tokenize(initialexec);
@@ -253,10 +186,10 @@ eval(parse(), initialEnv).toStr()
 実行
 */
 while (true) {
-    print(" > ");
-    var str = read();
+    print(" > ")
+    var str = read()
     // TODO: 括弧の数チェッカーをここに作ってループする。右括弧の方が多ければエラーにする
     
-    tokenize(str);
-    println(eval(parse(), initialEnv).toStr());
+    tokenize(str)
+    println(eval(parse(), initialEnv).toStr())
 }

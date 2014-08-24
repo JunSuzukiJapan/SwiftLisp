@@ -54,16 +54,43 @@ class Setf : SpecialForm {
     }
 }
 
-class Lambda : SpecialForm {
+class LambdaFunction : Function {
+    let params: LispObj
+    let body: LispObj
+
+    init(_ params: LispObj, _ body: LispObj){
+        self.params = params
+        self.body   = body
+    }
+    
+    override func toStr() -> String {
+        return "#<Compiled Function>"
+    }
+
+    // lambda式の実行
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        // lambda式の定義
-        // (lambda (x) (+ x 1))
-        // operand: ((x) (+ x  1))
-        let params = car(operand)   // (x)
-        let body = cadr(operand)    // (+ x 1)
+        if let ex_env = env.extend(params, operand: operand) {
+            return body.eval(ex_env)
+        } else {
+            return Error(message: "eval lambda params error: " + params.toStr() + " " + self.body.toStr())
+        }
+    }
+}
+
+class Lambda : SpecialForm {
+    var lambdaFunction : LambdaFunction? = nil
+
+    override func apply(operand: LispObj, _ env: Environment) -> LispObj {
+        if lambdaFunction == nil {
+            // lambda式の定義
+            // (lambda (x) (+ x 1))
+            // operand: ((x) (+ x  1))
+            let params = car(operand)   // (x)
+            let body = cadr(operand)    // (+ x 1)
+            lambdaFunction = LambdaFunction(params, body)
+        }
         
-        let tmp = cons(LispStr(value: LAMBDA), cons(params, cons(body, cons(env.copy(), Nil.sharedInstance))));
-        return tmp
+        return lambdaFunction!
     }
 }
 

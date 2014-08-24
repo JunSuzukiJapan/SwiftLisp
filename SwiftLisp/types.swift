@@ -133,9 +133,10 @@ class ConsCell: LispObj, SequenceType {
     }
     
     override func eval(env: Environment) -> LispObj {
-        let functionOrSpecialForm = self.head.eval(env) as? FunctionOrSpecialForm
+        let function = self.head.eval(env)
+        let functionOrSpecialForm = function as? FunctionOrSpecialForm
         if functionOrSpecialForm == nil {
-            if eq(car(functionOrSpecialForm!), LAMBDA) {
+            if eq(car(function), LAMBDA) {
                 // lambda式の実行
                 // oparator_body : ("*** lambda ***" (x) (list x x x) [env])
                 let lambda_params = cadr(functionOrSpecialForm!)    // (x)

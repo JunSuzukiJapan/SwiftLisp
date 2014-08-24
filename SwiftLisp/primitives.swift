@@ -62,7 +62,7 @@ class Lambda : SpecialForm {
         let params = car(operand)   // (x)
         let body = cadr(operand)    // (+ x 1)
         
-        let tmp = cons(LispStr(value: LAMBDA), cons(params, cons(body, cons(env.copy(), NIL))));
+        let tmp = cons(LispStr(value: LAMBDA), cons(params, cons(body, cons(env.copy(), Nil.sharedInstance))));
         return tmp
     }
 }

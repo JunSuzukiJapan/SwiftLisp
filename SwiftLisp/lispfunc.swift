@@ -26,14 +26,14 @@ func eq(exp: LispObj, str: String) -> Bool {
 
 func car(exp: LispObj) -> LispObj {
     if let operand = exp.listp() {
-        return operand.left;
+        return operand.head;
     } else {
         return Error(message: "at (car " + exp.toStr() + ")");
     }
 }
 func cdr(exp: LispObj) -> LispObj {
     if let operand = exp.listp() {
-        return operand.right;
+        return operand.tail;
     } else {
         return Error(message: "at (cdr " + exp.toStr() + ")");
     }
@@ -52,7 +52,7 @@ func concat(list: LispObj, lastcell: LispObj) -> LispObj {
     if list is Nil {
         return lastcell;
     } else if let tmpcell = list.listp() {
-        return cons(tmpcell.left, concat(tmpcell.right, lastcell));
+        return cons(tmpcell.head, concat(tmpcell.tail, lastcell));
     } else {
         // tmpcell == atom のとき(呼ばれないはず)
         return cons(list, lastcell);

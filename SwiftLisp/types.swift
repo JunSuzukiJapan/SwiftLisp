@@ -57,7 +57,7 @@ Singleton の例
 参考: http://qiita.com/1024jp/items/3a7bc437af3e79f74505
 */
 class Nil: LispObj {
-    override init() {
+    private override init() {
     }
     
     class var sharedInstance: Nil {
@@ -96,12 +96,12 @@ extension String {
 // Any という型もある
 
 class ConsCell: LispObj {
-    var left: LispObj;
-    var right: LispObj;
+    var head: LispObj;
+    var tail: LispObj;
     
-    init(car: LispObj, cdr: LispObj) {
-        self.left = car;
-        self.right = cdr;
+    init(car: LispObj, cdr: LispObj = Nil.sharedInstance) {
+        self.head = car;
+        self.tail = cdr;
     }
     
     override func toStr() -> String {
@@ -110,15 +110,15 @@ class ConsCell: LispObj {
         var tmpcell = self;
         
         while (true) {
-            returnValue += tmpcell.left.toStr();
+            returnValue += tmpcell.head.toStr();
             
-            if let cdrcell = tmpcell.right.listp() {
+            if let cdrcell = tmpcell.tail.listp() {
                 tmpcell = cdrcell;
-            } else if tmpcell.right is Nil {
+            } else if tmpcell.tail is Nil {
                 break;
             } else {
                 returnValue += ".";
-                returnValue += tmpcell.right.toStr();
+                returnValue += tmpcell.tail.toStr();
                 break;
             }
             returnValue += " ";
@@ -133,7 +133,7 @@ class ConsCell: LispObj {
     }
     
     override func eval(env: Environment) -> LispObj {
-        let functionOrSpecialForm = self.left.eval(env) as? FunctionOrSpecialForm
+        let functionOrSpecialForm = self.head.eval(env) as? FunctionOrSpecialForm
         if functionOrSpecialForm == nil {
             if eq(car(functionOrSpecialForm!), LAMBDA) {
                 // lambda式の実行
@@ -141,7 +141,7 @@ class ConsCell: LispObj {
                 let lambda_params = cadr(functionOrSpecialForm!)    // (x)
                 let lambda_body = car(cddr(functionOrSpecialForm!)) // (list x x x)
                 if let lambda_env = cadr(cddr(functionOrSpecialForm!)) as? Environment { // [env]
-                    let operand_check = eval_args(self.right, env)
+                    let operand_check = eval_args(self.tail, env)
                     if (operand_check is Error) {
                         return operand_check
                     }
@@ -149,7 +149,7 @@ class ConsCell: LispObj {
                     if let ex_env = lambda_env.extend(lambda_params, operand: operand_check) {
                         return lambda_body.eval(ex_env)
                     } else {
-                        return Error(message: "eval lambda params error: " + lambda_params.toStr() + " " + self.right.toStr())
+                        return Error(message: "eval lambda params error: " + lambda_params.toStr() + " " + self.tail.toStr())
                     }
                 }
             }
@@ -158,12 +158,12 @@ class ConsCell: LispObj {
         }
         
         if functionOrSpecialForm!.isFunction() {
-            var body = self.right.eval(env) as? ConsCell
+            var body = self.tail.eval(env) as? ConsCell
             if body == nil {
                 return Error(message: "関数またはスペシャルフォームの引数がリストでありません。")
             }
             
-            body = body!.left.eval(env) as? ConsCell
+            body = body!.head.eval(env) as? ConsCell
             if body == nil {
                 return Error(message: "関数の引数がリストでありません。")
             }
@@ -171,7 +171,7 @@ class ConsCell: LispObj {
             return functionOrSpecialForm!.apply(body!, env)
         
         }else if functionOrSpecialForm!.isSpecialForm() {
-            return functionOrSpecialForm!.apply(self.right, env)
+            return functionOrSpecialForm!.apply(self.tail, env)
 
         }else{
             return Error(message: "ありえないエラーです（関数またはスペシャルフォームでないものを呼び出そうとしました）。")
@@ -259,22 +259,22 @@ class Environment: LispObj {
                 return value;
             }
         }
-        return NIL;
+        return Nil.sharedInstance
     }
     
     func copy() -> Environment {
         // Swiftは値渡しのようなので、以下でコピーになる
         var newenv = Environment()
-        newenv.env = self.env;
-        return newenv;
+        newenv.env = self.env
+        return newenv
     }
     
     func extend(lambda_params: LispObj, operand: LispObj) -> Environment? {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0)
         if (addlist(lambda_params, operand: operand)) {
-            return self;
+            return self
         } else {
-            return nil;
+            return nil
         }
     }
     
@@ -283,18 +283,18 @@ class Environment: LispObj {
             if let operand_cell = operand.listp() {
                 
                 // これだと param_cell.car がLispStrのとき不具合になりそう
-                self.add(params_cell.left.toStr(), val: operand_cell.left);
-                return addlist(params_cell.right, operand: operand_cell.right);
+                self.add(params_cell.head.toStr(), val: operand_cell.head)
+                return addlist(params_cell.tail, operand: operand_cell.tail)
             } else {
                 // TODO: サイズが合わない場合のエラー処理
-                return false;
+                return false
             }
         } else {
             if let operand_cell = operand.listp() {
                 // TODO: サイズが合わない場合のエラー処理
-                return false;
+                return false
             } else {
-                return true;
+                return true
             }
         }
     }

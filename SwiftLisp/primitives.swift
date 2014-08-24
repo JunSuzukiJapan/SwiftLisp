@@ -78,19 +78,13 @@ class LambdaFunction : Function {
 }
 
 class Lambda : SpecialForm {
-    var lambdaFunction : LambdaFunction? = nil
-
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        if lambdaFunction == nil {
-            // lambda式の定義
-            // (lambda (x) (+ x 1))
-            // operand: ((x) (+ x  1))
-            let params = car(operand)   // (x)
-            let body = cadr(operand)    // (+ x 1)
-            lambdaFunction = LambdaFunction(params, body)
-        }
-        
-        return lambdaFunction!
+        // lambda式の定義
+        // (lambda (x) (+ x 1))
+        // operand: ((x) (+ x  1))
+        let params = car(operand)   // (x)
+        let body = cadr(operand)    // (+ x 1)
+        return LambdaFunction(params, body)
     }
 }
 

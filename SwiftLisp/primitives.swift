@@ -64,7 +64,7 @@ class LambdaFunction : Function {
     }
     
     override func toStr() -> String {
-        return "#<Compiled Function>"
+        return "#<Lambda Function>"
     }
 
     // lambda式の実行

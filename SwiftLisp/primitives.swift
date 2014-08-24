@@ -10,19 +10,19 @@ import Foundation
 
 class PrimCar : Function {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        return car(car(operand).eval(env))
+        return car(car(operand))
     }
 }
 
 class PrimCdr : Function {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        return cdr(car(operand).eval(env))
+        return cdr(car(operand))
     }
 }
 
 class PrimList : Function {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        return eval_args(operand, env)
+        return operand
     }
 }
 

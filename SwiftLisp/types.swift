@@ -95,13 +95,13 @@ extension String {
 // AnyObject という何でも表す型がある?
 // Any という型もある
 
-class ConsCell: LispObj {
-    var head: LispObj;
-    var tail: LispObj;
+class ConsCell: LispObj, SequenceType {
+    var head: LispObj
+    var tail: LispObj
     
     init(car: LispObj, cdr: LispObj = Nil.sharedInstance) {
-        self.head = car;
-        self.tail = cdr;
+        self.head = car
+        self.tail = cdr
     }
     
     override func toStr() -> String {
@@ -158,23 +158,55 @@ class ConsCell: LispObj {
         }
         
         if functionOrSpecialForm!.isFunction() {
-            var body = self.tail.eval(env) as? ConsCell
-            if body == nil {
-                return Error(message: "関数またはスペシャルフォームの引数がリストでありません。")
+            var tail = self.tail
+
+            if tail is Nil {
+                // do nothing
+            }else if let list = tail as? ConsCell {
+                tail = list.mapEval(env)
             }
             
-            body = body!.head.eval(env) as? ConsCell
-            if body == nil {
-                return Error(message: "関数の引数がリストでありません。")
-            }
-
-            return functionOrSpecialForm!.apply(body!, env)
+            return functionOrSpecialForm!.apply(tail, env)
         
         }else if functionOrSpecialForm!.isSpecialForm() {
             return functionOrSpecialForm!.apply(self.tail, env)
 
         }else{
             return Error(message: "ありえないエラーです（関数またはスペシャルフォームでないものを呼び出そうとしました）。")
+        }
+    }
+    
+    func mapEval(env: Environment) -> LispObj {
+        var result : LispObj = Nil.sharedInstance
+        var current : ConsCell? = nil
+        
+        for obj in self {
+            let value = obj.eval(env)
+            if result is Nil {
+                current = ConsCell(car: value, cdr: Nil.sharedInstance)
+                result = current!
+
+            }else{
+                let cell2 = ConsCell(car: value, cdr: Nil.sharedInstance)
+                current!.tail = cell2
+                current = cell2
+            }
+        }
+        
+        return result
+    }
+    
+    // for-inでアクセスできるようになる
+    func generate() -> GeneratorOf<LispObj> {
+        var current: LispObj = self
+
+        return GeneratorOf<LispObj> {
+            if let cell : ConsCell = current as? ConsCell {
+                current = cell.tail
+                return cell.head
+            }else{
+                return .None
+            }
         }
     }
 }

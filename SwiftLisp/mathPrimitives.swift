@@ -15,10 +15,12 @@ class Math {
             var list = operand
 
             while true {
+                if (list is Nil) {
+                    return LispNum(value: num)
+                }
+
                 if let number = car(list) as? LispNum {
                     num += number.value
-                }else if list is Nil {
-                    return LispNum(value: 0)
                 }else{
                     return Error(message: "+演算子の引数が整数ではありません。")
                 }
@@ -29,9 +31,6 @@ class Math {
                     return Error(message: "+演算子の引数がおかしいです。")
                 }
 
-                if (list is Nil) {
-                    return LispNum(value: num)
-                }
             }
         }
     }

@@ -34,8 +34,8 @@
 		9C47BE5219A642120063F1FF /* lispfunc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lispfunc.swift; sourceTree = "<group>"; };
 		A1120B8A19A7A19600205768 /* primitives.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = primitives.swift; sourceTree = "<group>"; };
 		A1120B8C19A89DBA00205768 /* reader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = reader.swift; sourceTree = "<group>"; };
-		A1484EDD19A8B121002026AE /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		A1BA1D0219A9BF5200AF6755 /* mathPrimitives.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mathPrimitives.swift; sourceTree = "<group>"; };
+		A1BA1D0519AA1C4A00AF6755 /* init.lisp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = init.lisp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,15 +68,23 @@
 		9C47BE4819A63AC80063F1FF /* SwiftLisp */ = {
 			isa = PBXGroup;
 			children = (
+				A1BA1D0419AA1C3700AF6755 /* Lisp */,
 				9C47BE4919A63AC80063F1FF /* main.swift */,
 				9C47BE5019A641FC0063F1FF /* types.swift */,
 				9C47BE5219A642120063F1FF /* lispfunc.swift */,
 				A1120B8A19A7A19600205768 /* primitives.swift */,
 				A1BA1D0219A9BF5200AF6755 /* mathPrimitives.swift */,
 				A1120B8C19A89DBA00205768 /* reader.swift */,
-				A1484EDD19A8B121002026AE /* MyPlayground.playground */,
 			);
 			path = SwiftLisp;
+			sourceTree = "<group>";
+		};
+		A1BA1D0419AA1C3700AF6755 /* Lisp */ = {
+			isa = PBXGroup;
+			children = (
+				A1BA1D0519AA1C4A00AF6755 /* init.lisp */,
+			);
+			name = Lisp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

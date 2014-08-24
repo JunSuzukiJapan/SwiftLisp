@@ -42,6 +42,7 @@ initialEnv.add("list", val: PrimList())
 initialEnv.add("quote", val: PrimQuote())
 initialEnv.add("fn", val: Lambda())
 initialEnv.add("lambda", val: Lambda())
+initialEnv.add("def", val: DefineFunction())
 initialEnv.add("+", val: Math.Add())
 initialEnv.add("-", val: Math.Minus())
 

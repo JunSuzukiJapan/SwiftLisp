@@ -88,4 +88,26 @@ class Lambda : SpecialForm {
     }
 }
 
+class UserFunction : LambdaFunction {
+    override init(_ params: LispObj, _ body: LispObj) {
+        super.init(params, body)
+    }
+    
+    override func toStr() -> String {
+        return "#<User Function>"
+    }
+}
+
+class DefineFunction : SpecialForm {
+    override func apply(operand: LispObj, _ env: Environment) -> LispObj {
+        let symbol = car(operand)        // function name
+        let params = cadr(operand)       // (x)
+        let body = car(cddr(operand))    // (+ x 1)
+        let function = UserFunction(params, body)
+        def_var(symbol, function, env)
+        
+        return function
+    }
+}
+
 

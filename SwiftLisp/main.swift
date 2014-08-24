@@ -46,6 +46,7 @@ initialEnv.add("def", val: DefineFunction())
 initialEnv.add("+", val: Math.Add())
 initialEnv.add("-", val: Math.Minus())
 initialEnv.add("*", val: Math.Times())
+initialEnv.add("/", val: Math.Divide())
 
 /*
 initialEnv.add("test", val: LispNum(value: 1000))

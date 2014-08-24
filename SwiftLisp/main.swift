@@ -43,6 +43,7 @@ initialEnv.add("quote", val: PrimQuote())
 initialEnv.add("fn", val: Lambda())
 initialEnv.add("lambda", val: Lambda())
 initialEnv.add("+", val: Math.Add())
+initialEnv.add("-", val: Math.Minus())
 
 /*
 initialEnv.add("test", val: LispNum(value: 1000))

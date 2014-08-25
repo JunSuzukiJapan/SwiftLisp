@@ -2,9 +2,6 @@
 //  InputPort.swift
 //  SwiftLisp
 //
-//  Created by suzukijun on 2014/08/23.
-//  Copyright (c) 2014年 toru. All rights reserved.
-//
 
 import Foundation
 
@@ -66,10 +63,10 @@ class FileInputPort : LispObj, InputPort {
     private var line: [Character] = [Character]()
     private var index: Int = 0
     private let fh: NSFileHandle
+    private var eof: Bool = false
 
     init(path: String){
-        let url = NSURL.URLWithString(path)
-        fh = NSFileHandle.fileHandleForReadingFromURL(url, error: nil)
+        fh = NSFileHandle(forReadingAtPath: path)
     }
     
     init(handle: NSFileHandle){
@@ -79,10 +76,8 @@ class FileInputPort : LispObj, InputPort {
     private func readLine() -> [Character] {
         index = 0
         
-        let fh = NSFileHandle.fileHandleWithStandardInput()
         if let data = fh.availableData {
             let str = NSString(data: data, encoding: NSUTF8StringEncoding) as String
-            //println("str = " + str)
             
             return str.toArray()
             
@@ -94,9 +89,9 @@ class FileInputPort : LispObj, InputPort {
     func readChar() -> Character? {
         if(line.count <= index){
             line = readLine()
-            //println("line = " + line)
             
             if line.count == 0 {
+                eof = true
                 return nil
             }
         }
@@ -106,6 +101,10 @@ class FileInputPort : LispObj, InputPort {
     
     func unreadChar(char: Character){
         index--
+    }
+    
+    func isEOF() -> Bool {
+        return eof
     }
 }
 
@@ -150,7 +149,7 @@ class Reader : LispObj {
         }
     }
 
-    func readSymbol() -> Symbol {
+    func readSymbol() -> LispObj {
         var name: String = ""
         while true {
             let ch = port.readChar()
@@ -164,12 +163,19 @@ class Reader : LispObj {
             //name.append(ch!)
             name += ch!
         }
+        
+        if(name.lowercaseString == "nil"){
+            return Nil.sharedInstance
+        }
 
         return Symbol(name: name)
     }
 
-    func read() -> LispObj {
+    func read() -> LispObj? {
         if let ch: Character? = port.readChar() {
+            if ch == nil { // XCode Beta5だとこれがないとエラーになる。本来はnilならここにこないはずだけど。。。
+                return nil
+            }
             //println("ch: " + ch!)
 
             switch(ch!){
@@ -184,7 +190,7 @@ class Reader : LispObj {
                             port.unreadChar(ch2)
 
                             let obj = read()
-                            list = concat(list, ConsCell(car: obj))
+                            list = concat(list, ConsCell(car: obj!))
 
                         }
                     }else{
@@ -200,7 +206,7 @@ class Reader : LispObj {
                     return body  // error occured
                 }
 
-                return ConsCell(car: Symbol(name: "quote"), cdr: ConsCell(car: body, cdr: Nil.sharedInstance))
+                return ConsCell(car: Symbol(name: "quote"), cdr: ConsCell(car: body!, cdr: Nil.sharedInstance))
 
             case "\"": // read string
                 var string : String = ""
@@ -251,6 +257,8 @@ class Reader : LispObj {
                 port.unreadChar(ch!)
                 return readSymbol()
             }
+        }else{
+            return nil
         }
 
         return Error(message: "synax error")

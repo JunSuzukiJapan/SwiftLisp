@@ -12,18 +12,23 @@
 		9C47BE5319A642120063F1FF /* lispfunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C47BE5219A642120063F1FF /* lispfunc.swift */; };
 		A1120B8B19A7A19600205768 /* primitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1120B8A19A7A19600205768 /* primitives.swift */; };
 		A1120B8D19A89DBA00205768 /* reader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1120B8C19A89DBA00205768 /* reader.swift */; };
+		A188300D19AB27660007C82F /* userFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A188300C19AB27660007C82F /* userFunction.swift */; };
+		A188300F19AB27F90007C82F /* conditionalStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A188300E19AB27F90007C82F /* conditionalStatement.swift */; };
 		A1BA1D0319A9BF5200AF6755 /* mathPrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA1D0219A9BF5200AF6755 /* mathPrimitives.swift */; };
+		A1BA1D0719AAC7F200AF6755 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA1D0619AAC7F200AF6755 /* Environment.swift */; };
+		A1BA1D0919AB026400AF6755 /* init.lisp in CopyFiles */ = {isa = PBXBuildFile; fileRef = A1BA1D0519AA1C4A00AF6755 /* init.lisp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9C47BE4419A63AC80063F1FF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = ".site-lisp";
+			dstSubfolderSpec = 16;
 			files = (
+				A1BA1D0919AB026400AF6755 /* init.lisp in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -34,8 +39,11 @@
 		9C47BE5219A642120063F1FF /* lispfunc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lispfunc.swift; sourceTree = "<group>"; };
 		A1120B8A19A7A19600205768 /* primitives.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = primitives.swift; sourceTree = "<group>"; };
 		A1120B8C19A89DBA00205768 /* reader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = reader.swift; sourceTree = "<group>"; };
+		A188300C19AB27660007C82F /* userFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = userFunction.swift; sourceTree = "<group>"; };
+		A188300E19AB27F90007C82F /* conditionalStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = conditionalStatement.swift; sourceTree = "<group>"; };
 		A1BA1D0219A9BF5200AF6755 /* mathPrimitives.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mathPrimitives.swift; sourceTree = "<group>"; };
 		A1BA1D0519AA1C4A00AF6755 /* init.lisp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = init.lisp; sourceTree = "<group>"; };
+		A1BA1D0619AAC7F200AF6755 /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,8 +81,11 @@
 				9C47BE5019A641FC0063F1FF /* types.swift */,
 				9C47BE5219A642120063F1FF /* lispfunc.swift */,
 				A1120B8A19A7A19600205768 /* primitives.swift */,
+				A188300E19AB27F90007C82F /* conditionalStatement.swift */,
 				A1BA1D0219A9BF5200AF6755 /* mathPrimitives.swift */,
+				A188300C19AB27660007C82F /* userFunction.swift */,
 				A1120B8C19A89DBA00205768 /* reader.swift */,
+				A1BA1D0619AAC7F200AF6755 /* Environment.swift */,
 			);
 			path = SwiftLisp;
 			sourceTree = "<group>";
@@ -145,10 +156,13 @@
 			files = (
 				9C47BE5319A642120063F1FF /* lispfunc.swift in Sources */,
 				9C47BE4A19A63AC80063F1FF /* main.swift in Sources */,
+				A188300D19AB27660007C82F /* userFunction.swift in Sources */,
 				A1120B8D19A89DBA00205768 /* reader.swift in Sources */,
+				A1BA1D0719AAC7F200AF6755 /* Environment.swift in Sources */,
 				9C47BE5119A641FC0063F1FF /* types.swift in Sources */,
 				A1120B8B19A7A19600205768 /* primitives.swift in Sources */,
 				A1BA1D0319A9BF5200AF6755 /* mathPrimitives.swift in Sources */,
+				A188300F19AB27F90007C82F /* conditionalStatement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

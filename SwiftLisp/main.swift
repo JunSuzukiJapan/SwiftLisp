@@ -34,42 +34,57 @@ func eval_args(exp: LispObj, env: Environment) -> LispObj {
     }
 }
 
-var initialEnv =  Environment.InitialEnvironment
-initialEnv.add("car", val:PrimCar())
-initialEnv.add("cdr", val:PrimCdr())
-initialEnv.add("=", val: Setf())
-initialEnv.add("list", val: PrimList())
-initialEnv.add("quote", val: PrimQuote())
-initialEnv.add("fn", val: Lambda())
-initialEnv.add("lambda", val: Lambda())
-initialEnv.add("def", val: DefineFunction())
-initialEnv.add("+", val: Math.Add())
-initialEnv.add("-", val: Math.Minus())
-initialEnv.add("*", val: Math.Times())
-initialEnv.add("/", val: Math.Divide())
 
-/*
-initialEnv.add("test", val: LispNum(value: 1000))
-initialEnv.add("test2", val: LispStr(value: "hogehoge"))
-
-var initialexec = "(= x (lambda (y) (list y y y)))"
-let strPort = StringInputPort(initialexec)
-let initReader = Reader(port: strPort)
-println(initReader.read().eval(initialEnv).toStr())
-*/
-
-// TODO if文追加
-// TODO +-*/追加
-// TODO define関数追加
 /*
 実行
 */
 
-let stdinPort = StdinPort()
-let stdReader = Reader(port: stdinPort)
-
-while (true) {
-    print(" > ")
-    
-    println(stdReader.read().eval(initialEnv).toStr())
+func initEnvironment(initialEnv: Environment){
+    initialEnv.add("car",    val: PrimCar())
+    initialEnv.add("cdr",    val: PrimCdr())
+    initialEnv.add("=",      val: Setf())
+    initialEnv.add("list",   val: PrimList())
+    initialEnv.add("quote",  val: PrimQuote())
+    initialEnv.add("fn",     val: Lambda())
+    initialEnv.add("lambda", val: Lambda())
+    initialEnv.add("def",    val: DefineFunction())
+    initialEnv.add("+",      val: MathPrimitives.Add())
+    initialEnv.add("-",      val: MathPrimitives.Minus())
+    initialEnv.add("*",      val: MathPrimitives.Times())
+    initialEnv.add("/",      val: MathPrimitives.Divide())
+    initialEnv.add("cons",   val: PrimCons())
+    initialEnv.add("prn",    val: PrimPrn())
+    initialEnv.add("pr",     val: PrimPr())
+    initialEnv.add("mac",    val: DefineMacro())
+    initialEnv.add("if",     val: PrimIf())
+    initialEnv.add("do",     val: PrimDo())
 }
+
+func main(){
+    // Environmentの初期化
+    var initialEnv =  Environment.InitialEnvironment
+    initEnvironment(initialEnv)
+
+    // init.lispファイルの読み込み
+    let bundle = NSBundle.mainBundle()
+    let resourceDirectoryPath = bundle.bundlePath
+    let path = "\(resourceDirectoryPath)/.site-lisp/init.lisp"
+    let fin = FileInputPort(path: path)
+    let fileReader = Reader(port: fin)
+    while let obj = fileReader.read() {
+        obj.eval(initialEnv)
+    }
+
+    // 標準入出力の設定
+    let stdinPort = StdinPort()
+    let stdReader = Reader(port: stdinPort)
+
+    // read-eval-printループ
+    while (true) {
+        print(" > ")
+    
+        println(stdReader.read()!.eval(initialEnv).toStr())
+    }
+}
+
+main()

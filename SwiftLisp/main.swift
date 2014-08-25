@@ -82,8 +82,10 @@ func main(){
     // read-eval-printループ
     while (true) {
         print(" > ")
-    
-        println(stdReader.read()!.eval(initialEnv).toStr())
+
+        let obj = stdReader.read()!.eval(initialEnv).toStr()
+        println()
+        println(obj)
     }
 }
 

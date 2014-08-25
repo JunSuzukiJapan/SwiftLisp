@@ -41,17 +41,34 @@ class PrimCons : Function {
 
 class PrimPrn : Function {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        let obj = car(operand)
-        println(obj.toStr())
-        return Nil.sharedInstance
+        var list = operand
+        var result: LispObj = car(list)
+        
+        while list is ConsCell {
+            let item = car(list)
+            print(item.toStr())
+            
+            list = cdr(list)
+        }
+        println()
+        
+        return result
     }
 }
 
 class PrimPr : Function {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        let obj = car(operand)
-        print(obj.toStr())
-        return Nil.sharedInstance
+        var list = operand
+        var result: LispObj = car(list)
+        
+        while list is ConsCell {
+            let item = car(list)
+            print(item.toStr())
+            
+            list = cdr(list)
+        }
+        
+        return result
     }
 }
 

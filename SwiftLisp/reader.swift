@@ -164,11 +164,14 @@ class Reader : LispObj {
             name += ch!
         }
         
-        if(name.lowercaseString == "nil"){
+        switch(name.lowercaseString){
+        case "nil":
             return Nil.sharedInstance
+        case "t":
+            return LispT.sharedInstance
+        default:
+            return Symbol(name: name)
         }
-
-        return Symbol(name: name)
     }
 
     func read() -> LispObj? {

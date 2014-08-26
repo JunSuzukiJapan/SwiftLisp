@@ -42,6 +42,7 @@ class Environment: LispObj {
         return newenv
     }
     
+/*
     func extend(lambda_params: LispObj, operand: LispObj) -> Environment? {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0)
         if (addlist(lambda_params, operand: operand)) {
@@ -49,6 +50,26 @@ class Environment: LispObj {
         } else {
             return nil
         }
+    }
+*/
+    
+    func withExtend(lambda_params: LispObj, operand: LispObj, body: (Environment) -> LispObj) -> LispObj {
+        env.insert(Dictionary<String, LispObj>(), atIndex: 0)
+        if (addlist(lambda_params, operand: operand)) {
+            let result = body(self)
+            env.removeAtIndex(0)
+            return result
+        }else{
+            return Error(message: "illegal lambda parameters")
+        }
+    }
+    
+    func withExtend(body: (Environment) -> LispObj) -> LispObj {
+        env.insert(Dictionary<String, LispObj>(), atIndex: 0)
+        let result = body(self)
+        env.removeAtIndex(0)
+
+        return result
     }
     
     func addlist(params: LispObj, operand: LispObj) -> Bool {

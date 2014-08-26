@@ -27,11 +27,9 @@ class LambdaFunction : Function {
     
     // lambda式の実行
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        if let ex_env = env.extend(params, operand: operand) {
-            return body.eval(ex_env)
-        } else {
-            return Error(message: "eval lambda params error: " + params.toStr() + " " + self.body.toStr())
-        }
+        return env.withExtend(params, operand: operand, body: { (exEnv: Environment) in
+            return self.body.eval(exEnv)
+        })
     }
 }
 
@@ -93,12 +91,10 @@ class UserMacro : LambdaFunction {
     
     // macroの実行
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        if let ex_env = env.extend(params, operand: operand) {
-            let expanded = body.eval(ex_env)    // マクロを展開する。
-            return expanded.eval(env)           // 展開したものを実行
-        } else {
-            return Error(message: "eval macro params error: " + params.toStr() + " " + self.body.toStr())
-        }
+        return env.withExtend(params, operand: operand, body: { (exEnv: Environment) in
+            let expanded = self.body.eval(exEnv)    // マクロを展開する。
+            return expanded.eval(env)                // 展開したものを実行
+        })
     }
 }
 

@@ -58,6 +58,7 @@ func initEnvironment(initialEnv: Environment){
     initialEnv.add("mac",    val: DefineMacro())
     initialEnv.add("if",     val: PrimIf())
     initialEnv.add("do",     val: PrimDo())
+    initialEnv.add("let",    val: PrimLet())
 }
 
 func main(){

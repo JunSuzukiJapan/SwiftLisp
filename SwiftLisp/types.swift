@@ -20,7 +20,7 @@ class LispObj {
     }
 
     func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        return Error(message: "関数またはスペシャルフォームでないものを呼び出そうとしました.")
+        return Error(message: "applyできないオブジェクトを呼び出そうとしました.")
     }
 }
 
@@ -69,6 +69,22 @@ class Nil: LispObj {
     
     override func toStr() -> String {
         return "nil";
+    }
+}
+
+class LispT: LispObj {
+    private override init() {
+    }
+    
+    class var sharedInstance: LispT {
+    struct Singleton {
+        private static let instance = LispT()
+        }
+        return Singleton.instance
+    }
+    
+    override func toStr() -> String {
+        return "t";
     }
 }
 
@@ -136,26 +152,8 @@ class ConsCell: LispObj, SequenceType {
         let function = self.head.eval(env)
         let functionOrSpecialForm = function as? FunctionOrSpecialForm
         if functionOrSpecialForm == nil {
-            if eq(car(function), LAMBDA) {
-                // lambda式の実行
-                // oparator_body : ("*** lambda ***" (x) (list x x x) [env])
-                let lambda_params = cadr(functionOrSpecialForm!)    // (x)
-                let lambda_body = car(cddr(functionOrSpecialForm!)) // (list x x x)
-                if let lambda_env = cadr(cddr(functionOrSpecialForm!)) as? Environment { // [env]
-                    let operand_check = eval_args(self.tail, env)
-                    if (operand_check is Error) {
-                        return operand_check
-                    }
-                    
-                    if let ex_env = lambda_env.extend(lambda_params, operand: operand_check) {
-                        return lambda_body.eval(ex_env)
-                    } else {
-                        return Error(message: "eval lambda params error: " + lambda_params.toStr() + " " + self.tail.toStr())
-                    }
-                }
-            }
-            
-            return Error(message: "関数またはスペシャルフォームでないものを呼び出そうとしました。")
+            //return Error(message: "関数またはスペシャルフォームでないものを呼び出そうとしました。")
+            return function.apply(self.tail, env)
         }
         
         if functionOrSpecialForm!.isFunction() {
@@ -243,6 +241,29 @@ class LispNum: LispObj {
     }
 }
 
+class LispChar : LispObj {
+    var ch: Character
+
+    init(_ ch: Character){
+        self.ch = ch
+    }
+    
+    override func toStr() -> String {
+        switch(self.ch){
+        case "\n":
+            return "#\\\\n"
+        case "\r":
+            return "#\\\\r"
+        case " ":
+            return "#\\space"
+        case "\t":
+            return "#\\tab"
+        default:
+            return "#\\" + ch
+        }
+    }
+}
+
 class LispStr: LispObj {
     var value: String;
     init(value: String) {
@@ -251,6 +272,26 @@ class LispStr: LispObj {
     
     override func toStr() -> String {
         return "\"" + value + "\"";
+    }
+    
+    override func apply(operand: LispObj, _ env: Environment) -> LispObj {
+        if let index = car(operand) as? LispNum {
+            if index.value >= value.utf16Count {
+                return Error(message: "文字列よりの長さよりも大きいインデックスです。")
+            }
+            return self[index.value]
+        }else{
+            return Error(message: "文字列に数値以外の引数が渡されました。")
+        }
+    }
+    
+    subscript(index: Int) -> LispChar {
+        get {
+            let str = self.value as NSString
+            let sub = str.substringWithRange(NSRange(location: index, length: 1))
+            let character: Character = Character(sub)
+            return LispChar(character)
+        }
     }
 }
 

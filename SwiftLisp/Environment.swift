@@ -42,17 +42,6 @@ class Environment: LispObj {
         return newenv
     }
     
-/*
-    func extend(lambda_params: LispObj, operand: LispObj) -> Environment? {
-        env.insert(Dictionary<String, LispObj>(), atIndex: 0)
-        if (addlist(lambda_params, operand: operand)) {
-            return self
-        } else {
-            return nil
-        }
-    }
-*/
-    
     func withExtend(lambda_params: LispObj, operand: LispObj, body: (Environment) -> LispObj) -> LispObj {
         env.insert(Dictionary<String, LispObj>(), atIndex: 0)
         if (addlist(lambda_params, operand: operand)) {

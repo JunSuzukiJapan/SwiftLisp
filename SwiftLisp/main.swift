@@ -59,6 +59,7 @@ func initEnvironment(initialEnv: Environment){
     initialEnv.add("if",     val: PrimIf())
     initialEnv.add("do",     val: PrimDo())
     initialEnv.add("let",    val: PrimLet())
+    initialEnv.add("with",   val: PrimWith())
 }
 
 func main(){

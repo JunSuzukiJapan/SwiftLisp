@@ -184,7 +184,7 @@ class Reader : LispObj {
 
     func read() -> LispObj? {
         if let ch: Character? = port.readChar() {
-            if ch == nil { // XCode Beta5だとこれがないとエラーになる。本来はnilならここにこないはずだけど。。。
+            if ch == nil {
                 return nil
             }
             //println("ch: " + ch!)
@@ -271,6 +271,9 @@ class Reader : LispObj {
                     var ch3 = ch
                     do {
                         ch3 = port.readChar()
+                        if ch3 == nil {
+                            return nil
+                        }
                     } while ch3!.isWhiteSpace()
                     port.unreadChar(ch3!)
 

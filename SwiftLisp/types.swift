@@ -163,6 +163,7 @@ class ConsCell: LispObj, SequenceType {
                 // do nothing
             }else if let list = tail as? ConsCell {
                 tail = list.mapEval(env)
+                //tail = list
             }
             
             return functionOrSpecialForm!.apply(tail, env)

@@ -74,8 +74,18 @@ class Environment: LispObj {
             }
         } else {
             if let operand_cell = operand.listp() {
-                // TODO: サイズが合わない場合のエラー処理
-                return false
+                if let symbol = params as? Symbol {
+                    //println("symbol: \(symbol.toStr())")
+                    //println("operand_cell: \(operand_cell.toStr())")
+                    
+                    self.add(symbol.toStr(), val: operand_cell)
+                    return true
+
+                }else{
+                    // TODO: サイズが合わない場合のエラー処理
+                    return false
+                }
+            
             } else {
                 return true
             }

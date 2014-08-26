@@ -148,6 +148,14 @@ class Reader : LispObj {
             return 0
         }
     }
+    
+    func skipWhitespace(){
+        var ch = port.readChar()
+        while ch!.isWhiteSpace() {
+            ch = port.readChar()
+        }
+        port.unreadChar(ch!)
+    }
 
     func readSymbol() -> LispObj {
         var name: String = ""
@@ -187,9 +195,22 @@ class Reader : LispObj {
 
                 while(true){
                     if let ch2 = port.readChar() {
-                        if ch2 == ")" {
+                        switch(ch2){
+                        case ")":
                             return list
-                        }else{
+
+                        case ".":
+                            let cdr = read()
+                            skipWhitespace()
+                            let ch3 = port.readChar()
+                            if ch3 == ")" {
+                                return concat(list, cdr!)
+                            }else{
+                                return Error(message: "syntax error after after dot.")
+                            }
+                            
+                            
+                        default:
                             port.unreadChar(ch2)
 
                             let obj = read()

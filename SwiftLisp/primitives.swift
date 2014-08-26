@@ -46,7 +46,11 @@ class PrimPrn : Function {
         
         while list is ConsCell {
             let item = car(list)
-            print(item.toStr())
+            if let str = item as? LispStr {
+                print(str.value)
+            }else{
+                print(item.toStr())
+            }
             
             list = cdr(list)
         }
@@ -63,7 +67,11 @@ class PrimPr : Function {
         
         while list is ConsCell {
             let item = car(list)
-            print(item.toStr())
+            if let str = item as? LispStr {
+                print(str.value)
+            }else{
+                print(item.toStr())
+            }
             
             list = cdr(list)
         }

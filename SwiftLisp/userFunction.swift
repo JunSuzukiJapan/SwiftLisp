@@ -50,14 +50,27 @@ class Lambda : SpecialForm {
 class UserFunction : LambdaFunction {
     private let name: String
     
-    init(_ name: String, _ params: LispObj, _ body: LispObj) {
+    init(_ name: String, _ params: LispObj, _ rest: LispObj) {
         self.name = name
         
-        super.init(params, body)
+        super.init(params, rest)
     }
     
     override func toStr() -> String {
         return "#<User Function: \(self.name)>"
+    }
+
+    override func apply(operand: LispObj, _ env: Environment) -> LispObj {
+        return env.withExtend(params, operand: operand, body: { (exEnv: Environment) in
+            var result = car(self.body).eval(exEnv)
+            var list = cdr(self.body)
+            while list is ConsCell {
+                result = car(list).eval(exEnv)
+                list = cdr(list)
+            }
+            
+            return result
+        })
     }
 }
 
@@ -65,8 +78,8 @@ class DefineFunction : SpecialForm {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
         let symbol = car(operand) as Symbol    // function name
         let params = cadr(operand)             // (x)
-        let body = car(cddr(operand))          // (+ x 1)
-        let function = UserFunction(symbol.name, params, body)
+        let rest = cddr(operand)          // (+ x 1)
+        let function = UserFunction(symbol.name, params, rest)
         def_var(symbol, function, env)
         
         return function
@@ -76,13 +89,21 @@ class DefineFunction : SpecialForm {
 //
 // Macro
 //
-class UserMacro : LambdaFunction {
+class UserMacro : SpecialForm {
     private let name: String
+    private let params: LispObj
+    private let rest: LispObj
     
-    init(_ name: String, _ params: LispObj, _ body: LispObj) {
+    init(_ params: LispObj, _ rest: LispObj){
+        self.name = "#<User Macro>"
+        self.params = params
+        self.rest   = rest
+    }
+    
+    init(_ name: String, _ params: LispObj, _ rest: LispObj) {
         self.name = name
-        
-        super.init(params, body)
+        self.params = params
+        self.rest   = rest
     }
     
     override func toStr() -> String {
@@ -92,18 +113,33 @@ class UserMacro : LambdaFunction {
     // macroの実行
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
         return env.withExtend(params, operand: operand, body: { (exEnv: Environment) in
-            let expanded = self.body.eval(exEnv)    // マクロを展開する。
-            return expanded.eval(env)                // 展開したものを実行
+            // マクロを展開する。
+            var expanded = car(self.rest).eval(exEnv)
+            var list = cdr(self.rest)
+            var result = expanded.eval(env)            // 展開したものを実行
+            
+            //println("expanded: \(expanded.toStr())")
+            //println("self.body: \(self.rest.toStr())")
+            //println("list: \(list.toStr())")
+            
+            while list is ConsCell {
+                expanded = car(list).eval(exEnv)
+                result = expanded.eval(env)            // 展開したものを実行
+
+                list = cdr(list)
+            }
+
+            return result
         })
     }
 }
 
 class DefineMacro : SpecialForm {
     override func apply(operand: LispObj, _ env: Environment) -> LispObj {
-        let symbol = car(operand) as Symbol    // function name
-        let params = cadr(operand)             // (x)
-        let body = car(cddr(operand))          // (+ x 1)
-        let macro = UserMacro(symbol.name, params, body)
+        let symbol = car(operand) as Symbol
+        let params = cadr(operand)
+        let rest = cddr(operand)
+        let macro = UserMacro(symbol.name, params, rest)
         def_var(symbol, macro, env)
         
         return macro

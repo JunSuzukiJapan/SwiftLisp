@@ -13,6 +13,9 @@ func def_var(variable: String, val: LispObj, var env: Environment) {
 func def_var(variable: LispObj, val: LispObj, env: Environment) {
     if let symbol = variable as? Symbol {
         def_var(symbol.name, val, env)
+    }else if let cell = variable as? ConsCell {
+        def_var(car(cell), car(val), env)
+        def_var(cdr(cell), cdr(val), env)
     }
 }
 

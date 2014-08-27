@@ -26,7 +26,6 @@ SOFTWARE.
 
 import Foundation
 
-
 class LispObj {
     func toStr() -> String { return "" }
     
@@ -39,6 +38,10 @@ class LispObj {
 
     func apply(operand: LispObj, _ env: Environment) -> LispObj {
         return Error(message: "applyできないオブジェクトを呼び出そうとしました.")
+    }
+    
+    func eq(obj: LispObj) -> Bool {
+        return self === obj
     }
 }
 
@@ -258,6 +261,13 @@ class LispNum: LispObj {
     override func toStr() -> String {
         return String(value);
     }
+    
+    override func eq(obj: LispObj) -> Bool {
+        if let num2 = obj as? LispNum {
+            return self.value == num2.value
+        }
+        return false
+    }
 }
 
 class LispChar : LispObj {
@@ -280,6 +290,13 @@ class LispChar : LispObj {
         default:
             return "#\\" + ch
         }
+    }
+
+    override func eq(obj: LispObj) -> Bool {
+        if let ch2 = obj as? LispChar {
+            return self.ch == ch2.ch
+        }
+        return false
     }
 }
 
@@ -311,6 +328,13 @@ class LispStr: LispObj {
             let character: Character = Character(sub)
             return LispChar(character)
         }
+    }
+    
+    override func eq(obj: LispObj) -> Bool {
+        if let s2 = obj as? LispStr {
+            return self.value == s2.value
+        }
+        return false
     }
 }
 

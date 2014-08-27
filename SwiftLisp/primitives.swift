@@ -118,3 +118,18 @@ class Setf : SpecialForm {
 
     }
 }
+
+class PrimIs : Function {
+    override func apply(operand: LispObj, _ env: Environment) -> LispObj {
+        let arg1:LispObj = car(operand)
+        let arg2:LispObj = cadr(operand)
+
+        if arg1.eq(arg2) {
+            return LispT.sharedInstance
+        }else{
+            return Nil.sharedInstance
+        }
+    }
+}
+
+

@@ -1,10 +1,13 @@
 (prn "Hello, arc!")
 
+
 (mac when (test . body)
     (list 'if test (cons 'do body)))
 
+;; 奇数？
 (def odd (num)
-    (is (% num 2) 1))
+    (is (mod num 2) 1))
 
+;; 偶数?
 (def even (num)
-    (is (% num 2) 0))
+    (is (mod num 2) 0))

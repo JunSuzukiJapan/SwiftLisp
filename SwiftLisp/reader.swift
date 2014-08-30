@@ -286,6 +286,14 @@ class Reader : LispObj {
                     }
                 }
                 
+            case ";": // skip comment
+                while let ch = port.readChar() {
+                    if ch == "\n" || ch == "\r" {
+                        break
+                    }
+                }
+                return read()
+                
             default:
                 // 空白文字を読み飛ばす。
                 if ch!.isWhiteSpace(){

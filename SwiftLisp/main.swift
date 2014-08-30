@@ -81,7 +81,7 @@ func initEnvironment(initialEnv: Environment){
     initialEnv.add("-",      val: MathPrimitives.Minus())
     initialEnv.add("*",      val: MathPrimitives.Times())
     initialEnv.add("/",      val: MathPrimitives.Divide())
-    initialEnv.add("%",      val: MathPrimitives.Modulo())
+    initialEnv.add("mod",      val: MathPrimitives.Modulo())
     initialEnv.add("cons",   val: PrimCons())
     initialEnv.add("prn",    val: PrimPrn())
     initialEnv.add("pr",     val: PrimPr())

@@ -288,7 +288,7 @@ class LispChar : LispObj {
         case "\t":
             return "#\\tab"
         default:
-            return "#\\" + ch
+            return "#\\" + String(ch)
         }
     }
 

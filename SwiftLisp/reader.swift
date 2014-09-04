@@ -97,7 +97,8 @@ class FileInputPort : LispObj, InputPort {
     private func readLine() -> [Character] {
         index = 0
         
-        if let data = fh.availableData {
+        let data = fh.availableData
+        if data.length != 0 {
             let str = NSString(data: data, encoding: NSUTF8StringEncoding) as String
             
             return str.toArray()
@@ -190,7 +191,7 @@ class Reader : LispObj {
                 break
             }
             //name.append(ch!)
-            name += ch!
+            name += String(ch!)
         }
         
         switch(name.lowercaseString){
@@ -262,7 +263,7 @@ class Reader : LispObj {
 
                     default:
                         //string.append(ch)
-                        string += ch
+                        string += String(ch)
                         break
                     }
                 }
